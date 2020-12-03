@@ -254,75 +254,42 @@ def setStyle(name,height,bold=False):
     style.font = font
     return style
 
-def write_data_to_execl(time='AM'):
+def write_data_to_execl():
     '''生成Execl表格'''
     data = getData()
+    f = xlwt.Workbook()
+    sheet1 = f.add_sheet('AM', cell_overwrite_ok=True)
+    sheet2 = f.add_sheet('PM', cell_overwrite_ok=True)          # 用于下文的二次重写数据
+    n = 0                                                       # 计行变量
+    row0 = ["序号","项目名称",
+            "服务器名称","IP地址",
+            "CPU空闲%",
+            "内存总量GB","内存剩余%",
+            "磁盘'/data'剩余%","磁盘'/data'总量GB",
+            "磁盘'/'剩余%","磁盘'/'总量GB"]
 
-    if time == "AM":
-        f = xlwt.Workbook()
-        sheet1 = f.add_sheet('AM', cell_overwrite_ok=True)
-        sheet2 = f.add_sheet('PM', cell_overwrite_ok=True)          # 用于下文的二次重写数据
-        n = 0                                                       # 计行变量
-        row0 = ["序号","项目名称",
-                "服务器名称","IP地址",
-                "CPU空闲%",
-                "内存总量GB","内存剩余%",
-                "磁盘'/data'剩余%","磁盘'/data'总量GB",
-                "磁盘'/'剩余%","磁盘'/'总量GB"]
+    for i in range(0,len(row0)):
+        '''添加首行表头,格式.write(行,列,数据,字符格式)'''
+        sheet1.write(0,i,row0[i],setStyle('Times New Roman',220,True))
 
-        for i in range(0,len(row0)):
-            '''添加首行表头,格式.write(行,列,数据,字符格式)'''
-            sheet1.write(0,i,row0[i],setStyle('Times New Roman',220,True))
+    for i in data:
+        '''表中具体数据填充'''
+        n = n + 1
+        sheet1.write(n,0,n,setStyle('Times New Roman',220))
+        sheet1.write(n,1,i['gn'],setStyle('Times New Roman',220))
+        sheet1.write(n,2,i['hostname'],setStyle('Times New Roman',220))
+        sheet1.write(n,3,i['ip'],setStyle('Times New Roman',220))
+        sheet1.write(n,4,i['cpu_idle'],setStyle('Times New Roman',220))
+        sheet1.write(n,5,i['memory_total'],setStyle('Times New Roman',220))
+        sheet1.write(n,6,i['memory_pavail'],setStyle('Times New Roman',220))
+        sheet1.write(n,7,i['Linux_disk_data_pfree'],setStyle('Times New Roman',220))
+        sheet1.write(n,8,i['Linux_disk_data_total'],setStyle('Times New Roman',220))
+        sheet1.write(n,9,i['Linux_disk_pfree'],setStyle('Times New Roman',220))
+        sheet1.write(n,10,i['Linux_disk_total'],setStyle('Times New Roman',220))
 
-        for i in data:
-            '''表中具体数据填充'''
-            n = n + 1
-            sheet1.write(n,0,n,setStyle('Times New Roman',220))
-            sheet1.write(n,1,i['gn'],setStyle('Times New Roman',220))
-            sheet1.write(n,2,i['hostname'],setStyle('Times New Roman',220))
-            sheet1.write(n,3,i['ip'],setStyle('Times New Roman',220))
-            sheet1.write(n,4,i['cpu_idle'],setStyle('Times New Roman',220))
-            sheet1.write(n,5,i['memory_total'],setStyle('Times New Roman',220))
-            sheet1.write(n,6,i['memory_pavail'],setStyle('Times New Roman',220))
-            sheet1.write(n,7,i['Linux_disk_data_pfree'],setStyle('Times New Roman',220))
-            sheet1.write(n,8,i['Linux_disk_data_total'],setStyle('Times New Roman',220))
-            sheet1.write(n,9,i['Linux_disk_pfree'],setStyle('Times New Roman',220))
-            sheet1.write(n,10,i['Linux_disk_total'],setStyle('Times New Roman',220))
-
-        sheet2.write(0,0,'')
-        f.save(filename)                                                # 保存文件
-
-    elif time == "PM":
-        old_file = xlrd.open_workbook(filename)
-        new_file = copy(old_file)
-        sheet2 = new_file.get_sheet(1)
-        n = 0
-        row0 = ["序号", "项目名称",
-                "服务器名称", "IP地址",
-                "CPU空闲%",
-                "内存总量GB", "内存剩余%",
-                "磁盘'/data'剩余%", "磁盘'/data'总量GB",
-                "磁盘'/'剩余%", "磁盘'/'总量GB"]
-
-        for i in range(0, len(row0)):
-            sheet2.write(0, i, row0[i], setStyle('Times New Roman', 220, True))
-
-        for i in data:
-            n = n + 1
-            sheet2.write(n, 0, n, setStyle('Times New Roman', 220))
-            sheet2.write(n, 1, i['gn'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 2, i['hostname'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 3, i['ip'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 4, i['cpu_idle'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 5, i['memory_total'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 6, i['memory_pavail'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 7, i['Linux_disk_data_pfree'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 8, i['Linux_disk_data_total'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 9, i['Linux_disk_pfree'], setStyle('Times New Roman', 220))
-            sheet2.write(n, 10, i['Linux_disk_total'], setStyle('Times New Roman', 220))
-        new_file.save(filename)
+    sheet2.write(0,0,'')
+    f.save(filename)                                                # 保存文件
 
 if __name__ == '__main__':
-    filename = r'D:\File\05、日常巡检\生产服务器日常巡检-%s.xls' % (time.strftime('%Y%m%d',time.localtime()))
-    # write_data_to_execl()         # 上午执行时开启
-    write_data_to_execl('PM')       # 下午执行时开启
+    filename = r'filename-%s.xls' % (time.strftime('%Y%m%d',time.localtime()))
+    write_data_to_execl()
