@@ -286,7 +286,6 @@ def write_data_to_execl():
         sheet1.write(n,9,i['Linux_disk_pfree'],setStyle('Times New Roman',220))
         sheet1.write(n,10,i['Linux_disk_total'],setStyle('Times New Roman',220))
 
-    sheet2.write(0,0,'')
     f.save(filename)                                                # 保存文件
 
 if __name__ == '__main__':
