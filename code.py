@@ -258,8 +258,7 @@ def write_data_to_execl():
     '''生成Execl表格'''
     data = getData()
     f = xlwt.Workbook()
-    sheet1 = f.add_sheet('AM', cell_overwrite_ok=True)
-    sheet2 = f.add_sheet('PM', cell_overwrite_ok=True)          # 用于下文的二次重写数据
+    sheet1 = f.add_sheet('Sheet1', cell_overwrite_ok=True)
     n = 0                                                       # 计行变量
     row0 = ["序号","项目名称",
             "服务器名称","IP地址",
